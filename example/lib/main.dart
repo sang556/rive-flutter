@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rive/rive.dart';
 
 import 'package:rive_example/custom_asset_loading.dart';
 import 'package:rive_example/custom_cached_asset_loading.dart';
@@ -66,12 +67,49 @@ class _RiveExampleAppState extends State<RiveExampleApp> {
     const _Page('Event Star Rating', EventStarRating()),
   ];
 
+  late RiveAnimationController _controller;
+  // Toggles between play and pause animation states
+  void _togglePlay() =>
+      setState(() => _controller.isActive = !_controller.isActive);
+
+  /// Tracks if the animation is playing by whether controller is running
+  bool get isPlaying => _controller.isActive;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = SimpleAnimation('idle');
+  }
+
+  @override
+  Widget build1(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child:
+          RiveAnimation.network('https://public.rive.app/community/runtime-files/3605-7541-payfit-summit-2022.riv',
+          //RiveAnimation.asset('assets/riv/wave.riv',
+          controllers: [_controller],
+          // Update the play state when the widget's initialized
+          onInit: (_) => setState(() {}),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _togglePlay,
+        tooltip: isPlaying ? 'Pause' : 'Play',
+        child: Icon(
+          isPlaying ? Icons.pause : Icons.play_arrow,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Rive Examples')),
       body: Center(
-        child: ListView.separated(
+        child:
+        ListView.separated(
           shrinkWrap: true,
           itemBuilder: (context, index) => _NavButton(page: _pages[index]),
           separatorBuilder: (context, index) => const SizedBox(height: 16),
